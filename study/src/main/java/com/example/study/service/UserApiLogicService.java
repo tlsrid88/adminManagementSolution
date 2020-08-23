@@ -2,6 +2,7 @@ package com.example.study.service;
 
 import com.example.study.ifs.CrudInterface;
 import com.example.study.model.entity.User;
+import com.example.study.model.enumclass.UserStatus;
 import com.example.study.model.network.Header;
 import com.example.study.model.network.request.UserApiRequest;
 import com.example.study.model.network.response.UserApiResponse;
@@ -28,12 +29,14 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
     @Override
     public Header<UserApiResponse> create(Header<UserApiRequest> request) {
 
+        UserApiRequest userApiRequest = request.getData();
+
         User user  = User.builder()
-                .account(request.getData().getAccount())
-                .password(request.getData().getPassword())
-                .status("REGISTERED")
-                .email(request.getData().getEmail())
-                .phoneNumber(request.getData().getPhoneNumber())
+                .account(userApiRequest.getAccount())
+                .password(userApiRequest.getPassword())
+                .status(UserStatus.REGISTERED)
+                .email(userApiRequest.getEmail())
+                .phoneNumber(userApiRequest.getPhoneNumber())
                 .registeredAt(LocalDateTime.now())
                 .build();
 
@@ -68,7 +71,7 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
         return optional.map(user -> {
                 user.setAccount(userApiRequest.getAccount())
                     .setPassword(userApiRequest.getPassword())
-                    .setStatus(userApiRequest.getStatus())
+                    .setStatus(UserStatus.REGISTERED)
                     .setEmail(userApiRequest.getEmail())
                     .setPhoneNumber(userApiRequest.getPhoneNumber())
                     .setRegisteredAt(userApiRequest.getRegisteredAt())

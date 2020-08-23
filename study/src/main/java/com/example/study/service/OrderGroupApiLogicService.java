@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Optional;
 
 @Service
 public class OrderGroupApiLogicService
@@ -27,8 +28,6 @@ public class OrderGroupApiLogicService
     @Override
     public Header<OrderGroupApiResponse> create(Header<OrderGroupApiRequest> req) {
         OrderGroupApiRequest body = req.getData();
-
-        System.out.println("body : " + body.toString());
 
         OrderGroup orderGroup = OrderGroup.builder()
                 .status(body.getStatus())
@@ -52,17 +51,45 @@ public class OrderGroupApiLogicService
 
     @Override
     public Header<OrderGroupApiResponse> read(Long id) {
-        return null;
+
+        Optional<OrderGroup> optional = orderGroupRepository.findById(id);
+
+        return orderGroupRepository.findById(id)
+                .map(this::response)
+                .orElseGet(() -> Header.ERROR("데이터가 없습니다."));
     }
 
     @Override
     public Header<OrderGroupApiResponse> update(Header<OrderGroupApiRequest> req) {
-        return null;
+        OrderGroupApiRequest body = req.getData();
+
+        return orderGroupRepository.findById(body.getId())
+                .map(orderGroup -> {
+                    orderGroup
+                            .setOrderType(body.getOrderType())
+                            .setRevAddress(body.getRevAddress())
+                            .setRevName(body.getRevName())
+                            .setPaymentType(body.getPaymentType())
+                            .setTotalPrice(body.getTotalPrice())
+                            .setTotalQuantity(body.getTotalQuantity())
+                            .setOrderAt(body.getOrderAt())
+                            .setArrivalDate(body.getArrivalData())
+                            .setUser(userRepository.getOne(body.getId()));
+                    return orderGroup;
+                })
+                .map(updateOrderGroupE -> orderGroupRepository.save(updateOrderGroupE))
+                .map(resOrderGroupH -> response(resOrderGroupH))
+                .orElseGet(() -> Header.ERROR("데이터가 없습니다."));
     }
 
     @Override
     public Header delete(Long id) {
-        return null;
+        Optional<OrderGroup> body = orderGroupRepository.findById(id);
+
+        return body.map(user -> {
+            orderGroupRepository.delete(user);
+            return Header.OK();
+        }).orElseGet(() -> Header.ERROR("데이터가 없습니다."));
     }
 
     private Header<OrderGroupApiResponse> response(OrderGroup orderGroup) {
