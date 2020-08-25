@@ -1,26 +1,19 @@
 package com.example.study.service;
 
-import com.example.study.ifs.CrudInterface;
 import com.example.study.model.entity.OrderGroup;
 import com.example.study.model.network.Header;
 import com.example.study.model.network.request.OrderGroupApiRequest;
 import com.example.study.model.network.response.OrderGroupApiResponse;
-import com.example.study.repository.OrderGroupRepository;
 import com.example.study.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.Optional;
 
 @Service
 public class OrderGroupApiLogicService
-        implements CrudInterface<OrderGroupApiRequest, OrderGroupApiResponse> {
-
-    @Autowired
-    private OrderGroupRepository orderGroupRepository;
+        extends BaseService<OrderGroupApiRequest, OrderGroupApiResponse, OrderGroup> {
 
     @Autowired
     private UserRepository userRepository;
@@ -44,7 +37,7 @@ public class OrderGroupApiLogicService
                 .user(userRepository.getOne(body.getUserId()))
                 .build();
 
-        OrderGroup newOrderGroup = orderGroupRepository.save(orderGroup);
+        OrderGroup newOrderGroup = baseRepository.save(orderGroup);
 
         return response(newOrderGroup);
     }
@@ -52,9 +45,9 @@ public class OrderGroupApiLogicService
     @Override
     public Header<OrderGroupApiResponse> read(Long id) {
 
-        Optional<OrderGroup> optional = orderGroupRepository.findById(id);
+        Optional<OrderGroup> optional = baseRepository.findById(id);
 
-        return orderGroupRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터가 없습니다."));
     }
@@ -63,7 +56,7 @@ public class OrderGroupApiLogicService
     public Header<OrderGroupApiResponse> update(Header<OrderGroupApiRequest> req) {
         OrderGroupApiRequest body = req.getData();
 
-        return orderGroupRepository.findById(body.getId())
+        return baseRepository.findById(body.getId())
                 .map(orderGroup -> {
                     orderGroup
                             .setOrderType(body.getOrderType())
@@ -77,17 +70,17 @@ public class OrderGroupApiLogicService
                             .setUser(userRepository.getOne(body.getId()));
                     return orderGroup;
                 })
-                .map(updateOrderGroupE -> orderGroupRepository.save(updateOrderGroupE))
+                .map(updateOrderGroupE -> baseRepository.save(updateOrderGroupE))
                 .map(resOrderGroupH -> response(resOrderGroupH))
                 .orElseGet(() -> Header.ERROR("데이터가 없습니다."));
     }
 
     @Override
     public Header delete(Long id) {
-        Optional<OrderGroup> body = orderGroupRepository.findById(id);
+        Optional<OrderGroup> body = baseRepository.findById(id);
 
         return body.map(user -> {
-            orderGroupRepository.delete(user);
+            baseRepository.delete(user);
             return Header.OK();
         }).orElseGet(() -> Header.ERROR("데이터가 없습니다."));
     }
