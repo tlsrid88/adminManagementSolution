@@ -22,7 +22,7 @@ public class PartnerApiResponse {
 
     private String address;
 
-    private String cellCenter;
+    private String callCenter;
 
     private String partnerNumber;
 

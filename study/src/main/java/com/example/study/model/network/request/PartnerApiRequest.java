@@ -13,9 +13,15 @@ import java.time.LocalDateTime;
 @Builder
 public class PartnerApiRequest {
 
+    private Long id;
+
+    private String name;
+
+    private String status;
+
     private String address;
 
-    private String cellCenter;
+    private String callCenter;
 
     private String partnerNumber;
 

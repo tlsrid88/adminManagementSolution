@@ -45,8 +45,6 @@ public class OrderGroupApiLogicService
     @Override
     public Header<OrderGroupApiResponse> read(Long id) {
 
-        Optional<OrderGroup> optional = baseRepository.findById(id);
-
         return baseRepository.findById(id)
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터가 없습니다."));
