@@ -6,9 +6,11 @@ import com.example.study.model.network.request.PartnerApiRequest;
 import com.example.study.model.network.response.PartnerApiResponse;
 import com.example.study.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PartnerApiService extends BaseService<PartnerApiRequest, PartnerApiResponse, Partner> {
@@ -96,5 +98,10 @@ public class PartnerApiService extends BaseService<PartnerApiRequest, PartnerApi
                 .build();
 
         return Header.OK(partnerApiResponse);
+    }
+
+    @Override
+    public Header<List<PartnerApiResponse>> search(Pageable pageable) {
+        return null;
     }
 }

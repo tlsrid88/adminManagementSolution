@@ -1,19 +1,21 @@
 package com.example.study.service;
 
-import com.example.study.ifs.CrudInterface;
 import com.example.study.model.entity.User;
 import com.example.study.model.enumclass.UserStatus;
 import com.example.study.model.network.Header;
+import com.example.study.model.network.Pagination;
 import com.example.study.model.network.request.UserApiRequest;
 import com.example.study.model.network.response.UserApiResponse;
-import com.example.study.repository.UserRepository;
 import lombok.Builder;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Builder
@@ -111,5 +113,41 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
 
         // Head.ok() + UserApiResponse
         return Header.OK(userApiResponse);
+    }
+
+    private UserApiResponse apiResponse(User user) {
+
+        //임시
+        UserApiResponse userApiResponse = UserApiResponse.builder()
+                .id(user.getId())
+                .account(user.getAccount())
+                .password(user.getPassword()) // TODO : 암호화 작업을 수행해야한다.
+                .status(user.getStatus())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .registeredAt(user.getRegisteredAt())
+                .unregisteredAt(user.getUnregisteredAt())
+                .build();
+
+        // Head.ok() + UserApiResponse
+        return userApiResponse;
+    }
+
+    @Override
+    public Header<List<UserApiResponse>> search(Pageable pageable) {
+        Page<User> users = baseRepository.findAll(pageable);
+
+        List<UserApiResponse> userApiResponseList = users.stream()
+                .map(user -> apiResponse(user))
+                .collect(Collectors.toList());
+
+        Pagination pagination = Pagination.builder()
+                .totalPages(users.getTotalPages())
+                .totalElements(users.getTotalElements())
+                .currentPage(users.getNumber())
+                .currentElements(users.getNumberOfElements())
+                .build();
+
+        return Header.OK(userApiResponseList, pagination);
     }
 }

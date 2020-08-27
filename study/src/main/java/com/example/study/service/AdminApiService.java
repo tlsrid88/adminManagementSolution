@@ -4,6 +4,9 @@ import com.example.study.model.entity.AdminUser;
 import com.example.study.model.network.Header;
 import com.example.study.model.network.request.AdminApiRequest;
 import com.example.study.model.network.response.AdminApiResponse;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public class AdminApiService extends BaseService<AdminApiRequest, AdminApiResponse, AdminUser> {
 
@@ -26,6 +29,11 @@ public class AdminApiService extends BaseService<AdminApiRequest, AdminApiRespon
 
     @Override
     public Header delete(Long id) {
+        return null;
+    }
+
+    @Override
+    public Header<List<AdminApiResponse>> search(Pageable pageable) {
         return null;
     }
 }
